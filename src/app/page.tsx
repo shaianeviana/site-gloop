@@ -3,8 +3,9 @@ import { useEffect, useState } from 'react';
 import Head from 'next/head';
 import { ContractService } from '../blockchain/contract';
 import { ClaimInfoModal } from '../components/ClaimInfoModal';
-import { useAccount } from 'wagmi';
-import ConnectButton from '../components/ConnectButton';
+import { client, contract } from '../../public/lib/thirdweb';
+import { ConnectButton,  useSendTransaction, useActiveAccount} from "thirdweb/react";
+import { claimTo } from "thirdweb/extensions/erc721";
 
 interface NFTAttribute {
   trait_type: string;
@@ -17,14 +18,50 @@ interface NFTMetadata {
 }
 
 export default function Home() {
-  const { isConnected } = useAccount();
+  const account = useActiveAccount();
+  const { mutate: sendTransaction, isPending, data, error } =  useSendTransaction();
   const [isMinting, setIsMinting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error1, setError] = useState<string | null>(null);
   const [gloopImageSrc, setGloopImageSrc] = useState<string | null>(null);
   const [isClaimInfoOpen, setIsClaimInfoOpen] = useState(false);
+  const [scanning, setScanning] = useState(false);
+  const [gloopFound, setGloopFound] = useState(false);
+  
+  function claim() {
+    console.log("Account in claim:", account);
+    if (!account) return alert("Wallet not connected");
+    setScanning(true);
+    setGloopFound(false);
+
+    // Inicia a animação e depois de 2 segundos mostra a bola rosa
+    setTimeout(() => {
+      setScanning(false);
+      setGloopFound(true);
+      // Pausar o vídeo de background quando a bola rosa for encontrada
+      const backgroundVideo = document.getElementById('backgroundVideo') as HTMLVideoElement | null;
+      if (backgroundVideo) {
+        backgroundVideo.pause();
+      }
+    }, 2000);
+
+    // Dar play no vídeo de background
+    const backgroundVideo = document.getElementById('backgroundVideo') as HTMLVideoElement | null;
+    if (backgroundVideo) {
+      backgroundVideo.play();
+    }
+
+    const transaction = claimTo({
+      contract,
+      to: account.address,
+      quantity: 1n,
+      from: account.address,
+    });
+
+    sendTransaction(transaction);
+  }
 
   useEffect(() => {
-    const contractService = ContractService.getInstance();
+    // Removido contractService.debugContract e contractService.getAllNFTs para evitar erro de contract.erc721
   }, []);
 
   useEffect(() => {
@@ -39,8 +76,6 @@ export default function Home() {
     const backgroundVideo = document.getElementById('backgroundVideo') as HTMLVideoElement;
 
     let angle = 0;
-    let scanning = false;
-    let gloopFound = false;
     let gloopRadius = 150;
     let gloopAngle = Math.random() * Math.PI * 2;
     let waveRadius = 0;
@@ -186,83 +221,6 @@ export default function Home() {
     }
     animate();
 
-    const mintButton = document.getElementById('mintButton')!;
-    mintButton.addEventListener('click', async () => {
-      if (!isConnected) {
-        setError('Please connect your wallet first');
-        return;
-      }
-
-      setIsMinting(true);
-      loader.style.display = 'block';
-      scanning = true;
-      gloopFound = false;
-
-      if (backgroundVideo) {
-        backgroundVideo.play();
-      }
-
-      try {
-        const contractService = ContractService.getInstance();
-        const tx = await contractService.mintNFT();
-        await tx.wait();
-
-        setTimeout(async () => {
-          loader.style.display = 'none';
-          scanning = false;
-          gloopFound = true;
-          setIsMinting(false);
-
-          if (backgroundVideo) {
-            backgroundVideo.pause();
-          }
-
-          const randomIndex = Math.floor(Math.random() * 777) + 1;
-          
-          try {
-            const [imageResponse, jsonResponse] = await Promise.all([
-              fetch(`https://bafybeib7csyrxilyuwmo2jhczl7hccztwhha7ti4f3u7kcsptuyohtkglq.ipfs.w3s.link/gloop${randomIndex}.png`),
-              fetch(`https://bafybeihl6hcb6xu4df5vsrkyw35c33dnmpgdh3u2b2zxpjojgvd6v5wh4q.ipfs.w3s.link/Gloop${randomIndex}.json`)
-            ]);
-
-            if (!imageResponse.ok || !jsonResponse.ok) {
-              throw new Error('Failed to fetch NFT data');
-            }
-
-            const jsonData = await jsonResponse.json() as NFTMetadata;
-            setGloopImageSrc(URL.createObjectURL(await imageResponse.blob()));
-
-            function formatLabel(label: string) {
-              return label.toUpperCase();
-            }
-            function formatValue(value: string) {
-              if (!value) return 'Unknown';
-              return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
-            }
-            gloopText.innerHTML = `
-              <div style='margin-bottom: 10px;'><strong style="font-size:1.1rem;">${formatLabel('NAME')}:</strong> ${formatValue(jsonData.name)}<div style='width:100%;height:2px;background:#0f0;margin:4px 0 0 0'></div></div>
-              <div style='margin-bottom: 10px;'><strong style="font-size:1.1rem;">${formatLabel('BACKGROUND')}:</strong> ${formatValue(jsonData.attributes?.find((attr: NFTAttribute) => attr.trait_type === 'Background')?.value || '')}<div style='width:100%;height:2px;background:#0f0;margin:4px 0 0 0'></div></div>
-              <div style='margin-bottom: 10px;'><strong style="font-size:1.1rem;">${formatLabel('TEXTURE')}:</strong> ${formatValue(jsonData.attributes?.find((attr: NFTAttribute) => attr.trait_type === 'Texture')?.value || '')}<div style='width:100%;height:2px;background:#0f0;margin:4px 0 0 0'></div></div>
-              <div style='margin-bottom: 10px;'><strong style="font-size:1.1rem;">${formatLabel('BODY')}:</strong> ${formatValue(jsonData.attributes?.find((attr: NFTAttribute) => attr.trait_type === 'Body')?.value || '')}<div style='width:100%;height:2px;background:#0f0;margin:4px 0 0 0'></div></div>
-              <div style='margin-bottom: 10px;'><strong style="font-size:1.1rem;">${formatLabel('MOUTH')}:</strong> ${formatValue(jsonData.attributes?.find((attr: NFTAttribute) => attr.trait_type === 'Mouth')?.value || '')}<div style='width:100%;height:2px;background:#0f0;margin:4px 0 0 0'></div></div>
-              <div style='margin-bottom: 10px;'><strong style="font-size:1.1rem;">${formatLabel('EYES')}:</strong> ${formatValue(jsonData.attributes?.find((attr: NFTAttribute) => attr.trait_type === 'Eyes')?.value || '')}<div style='width:100%;height:2px;background:#0f0;margin:4px 0 0 0'></div></div>
-            `;
-
-            gloopData.style.display = 'flex';
-          } catch (error) {
-            console.error('Error fetching NFT data:', error);
-            gloopText.innerText = 'Error loading NFT data. Please try again.';
-            gloopData.style.display = 'flex';
-          }
-        }, 3000);
-      } catch (error: any) {
-        setError(error.message || 'Failed to mint NFT');
-        loader.style.display = 'none';
-        scanning = false;
-        setIsMinting(false);
-      }
-    });
-
     // WAVE SIGNAL
     const waveSignal = document.getElementById('waveSignal') as HTMLCanvasElement;
     if (waveSignal) {
@@ -284,7 +242,7 @@ export default function Home() {
       }
       drawWave();
     }
-  }, [isConnected]);
+  }, [scanning, gloopFound]);
 
   return (
     <>
@@ -397,7 +355,9 @@ export default function Home() {
         display: 'flex', alignItems: 'center', gap: '10px',
         position: 'fixed', top: 24, right: 32, zIndex: 1001
       }}>
-        <ConnectButton />
+        <ConnectButton
+          client={client}
+        />
       </div>
 
       {error && (
@@ -412,7 +372,7 @@ export default function Home() {
           borderRadius: '5px',
           zIndex: 1000
         }}>
-          {error}
+          {error1}
         </div>
       )}
 
@@ -420,15 +380,16 @@ export default function Home() {
         <canvas id="radar"></canvas>
         <button 
           id="mintButton" 
-          disabled={!isConnected || isMinting}
+          disabled={isMinting || !account}
+          onClick={claim}
           style={{ 
             backgroundColor: '#ca2456', 
             color: 'white', 
             border: 'none', 
             padding: '10px 20px', 
-            cursor: (!isConnected || isMinting) ? 'not-allowed' : 'pointer',
+            cursor: isMinting ? 'not-allowed' : 'pointer',
             marginTop: '20px',
-            opacity: (!isConnected || isMinting) ? 0.7 : 1
+            opacity: isMinting ? 0.7 : 1
           }}
         >
           {isMinting ? 'Minting...' : 'Mint Gloop'}
