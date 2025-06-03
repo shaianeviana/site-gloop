@@ -63,12 +63,19 @@ export default function Home() {
   useEffect(() => {
     if (data) {
       console.log("Transaction data:", data);
-        const tx = data.transactionHash;
-        console.log("Transaction hash:", tx);
-        const tokenId = getClaimedTokenId(tx);
-        console.log("Token ID:", tokenId);
-      }
-  }, []);
+      const tx = data.transactionHash;
+      console.log("Transaction hash:", tx);
+  
+      (async () => {
+        try {
+          const tokenId = await getClaimedTokenId(tx);
+          console.log("Token ID:", tokenId);
+        } catch (err) {
+          console.error("Erro ao obter token ID:", err);
+        }
+      })();
+    }
+  }, [data]);
 
   useEffect(() => {
     const canvas = document.getElementById('radar') as HTMLCanvasElement;
