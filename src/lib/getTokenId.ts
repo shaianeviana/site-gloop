@@ -2,6 +2,30 @@ import { ethers } from "ethers";
 
 const provider = new ethers.JsonRpcProvider("https://testnet-rpc.monad.xyz");
 
+export interface Attribute {
+    trait_type: string;
+    value: string;
+}
+
+export interface Metadata {
+    name: string;
+    image: string;
+    attributes: Attribute[];
+}
+
+export async function getMetadataFromTokenId(tokenId: number): Promise<Metadata | null> {
+    const url = `https://bafybeigge2cxozi7lasv3i5whhafo32ikd7zzpvzysjve6cgirus3bgsju.ipfs.w3s.link/Gloop${tokenId}`;
+  
+    try {
+      const res = await fetch(url);
+      const metadata: Metadata = await res.json();
+      return metadata;
+    } catch (err) {
+      console.error("Erro ao buscar metadados:", err);
+      return null;
+    }
+}
+
 export async function getClaimedTokenId(txHash: string) {
     const txReceipt = await provider.getTransactionReceipt(txHash);
   

@@ -6,7 +6,7 @@ import { ClaimInfoModal } from '../components/ClaimInfoModal';
 import { client, contract } from '../../public/lib/thirdweb';
 import { ConnectButton,  useSendTransaction, useActiveAccount} from "thirdweb/react";
 import { claimTo } from "thirdweb/extensions/erc721";
-import { getClaimedTokenId } from '@/lib/getTokenId';
+import { getClaimedTokenId, getMetadataFromTokenId } from '@/lib/getTokenId';
 
 interface NFTAttribute {
   trait_type: string;
@@ -70,6 +70,8 @@ export default function Home() {
         try {
           const tokenId = await getClaimedTokenId(tx);
           console.log("Token ID:", tokenId);
+          const metadata = await getMetadataFromTokenId(Number(tokenId));
+          console.log("Metadata:", metadata);
         } catch (err) {
           console.error("Erro ao obter token ID:", err);
         }
@@ -470,3 +472,4 @@ export default function Home() {
     </>
   );
 }
+
