@@ -6,6 +6,7 @@ import { ClaimInfoModal } from '../components/ClaimInfoModal';
 import { client, contract } from '../../public/lib/thirdweb';
 import { ConnectButton,  useSendTransaction, useActiveAccount} from "thirdweb/react";
 import { claimTo } from "thirdweb/extensions/erc721";
+import { getClaimedTokenId } from '@/lib/getTokenId';
 
 interface NFTAttribute {
   trait_type: string;
@@ -21,7 +22,6 @@ export default function Home() {
   const account = useActiveAccount();
   const { mutate: sendTransaction, isPending, data, error } =  useSendTransaction();
   const [isMinting, setIsMinting] = useState(false);
-  const [error1, setError] = useState<string | null>(null);
   const [gloopImageSrc, setGloopImageSrc] = useState<string | null>(null);
   const [isClaimInfoOpen, setIsClaimInfoOpen] = useState(false);
   const [scanning, setScanning] = useState(false);
@@ -61,7 +61,13 @@ export default function Home() {
   }
 
   useEffect(() => {
-    // Removido contractService.debugContract e contractService.getAllNFTs para evitar erro de contract.erc721
+    if (data) {
+      console.log("Transaction data:", data);
+        const tx = data.transactionHash;
+        console.log("Transaction hash:", tx);
+        const tokenId = getClaimedTokenId(tx);
+        console.log("Token ID:", tokenId);
+      }
   }, []);
 
   useEffect(() => {
@@ -372,7 +378,7 @@ export default function Home() {
           borderRadius: '5px',
           zIndex: 1000
         }}>
-          {error1}
+          {error.message}
         </div>
       )}
 
