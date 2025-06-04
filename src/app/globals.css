@@ -3,6 +3,10 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
 }
 
 @theme inline {
@@ -23,8 +27,7 @@ body {
   margin: 0;
   overflow: hidden;
   font-family: 'Courier New', Courier, monospace;
-  background: url('/grass-illustration.png') no-repeat center center fixed;
-  background-size: cover;
+  background: transparent;
 }
 
 canvas {
@@ -113,4 +116,105 @@ appkit-button[data-connect] {
 
 appkit-button[data-connect]:hover {
   background: #e73370 !important;
+}
+
+@media (max-width: 600px) {
+  .icon.radiation {
+    width: 80px !important;
+    height: auto !important;
+    top: 6px !important;
+    left: 8px !important;
+  }
+  .antenna-mobile {
+    left: 10px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    position: fixed !important;
+  }
+  .wave-mobile {
+    left: 10px !important;
+    top: 60% !important;
+    bottom: auto !important;
+    transform: translateY(-50%) !important;
+    position: fixed !important;
+  }
+  /* Botão de informação (SVG próximo à logo) */
+  button[aria-label="Show claim info"] svg {
+    width: 24px !important;
+    height: 24px !important;
+  }
+  button[aria-label="Show claim info"] {
+    top: 18px !important;
+    left: 100px !important;
+  }
+  /* Antena (SVG e barra abaixo dela) */
+  [style*='top: 80%'][style*='left: 100px'] {
+    left: 10px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+  }
+  [style*='top: 80%'][style*='left: 100px'] svg {
+    width: 10.8px !important;
+    height: 14.4px !important;
+  }
+  [style*='top: 80%'][style*='left: 100px'] div {
+    width: 2.7px !important;
+    height: 14.4px !important;
+  }
+  /* Onda (canvas) */
+  #waveSignal {
+    width: 40px !important;
+    height: 12px !important;
+    left: 20px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+  }
+  .claim-modal-content {
+    min-width: unset !important;
+    max-width: 98vw !important;
+    width: 98vw !important;
+    padding: 16px 2vw 16px 2vw !important;
+    border-radius: 16px !important;
+    box-sizing: border-box !important;
+  }
+  .claim-modal-close {
+    top: 8px !important;
+    right: 10px !important;
+    font-size: 2rem !important;
+    z-index: 100 !important;
+  }
+  .claim-criteria-list {
+    gap: 16px !important;
+    padding-bottom: 4px !important;
+    margin-bottom: 4px !important;
+    overflow-x: auto !important;
+    max-width: 94vw !important;
+  }
+  .claim-criteria-item {
+    width: 80vw !important;
+    min-width: 220px !important;
+    max-width: 320px !important;
+    padding: 10px !important;
+  }
+  .claim-criteria-item img {
+    width: 60px !important;
+    height: 60px !important;
+  }
+  .claim-criteria-item div {
+    font-size: 1rem !important;
+  }
+  .claim-modal-content span,
+  .claim-modal-content div {
+    font-size: 1.1rem !important;
+  }
+  .claim-modal-attention {
+    font-size: 0.65rem !important;
+    text-align: center !important;
+    width: 92vw !important;
+    max-width: 92vw !important;
+    margin: 18px auto 0 auto !important;
+    padding: 0 2vw !important;
+    line-height: 1.3 !important;
+    display: block !important;
+  }
 }

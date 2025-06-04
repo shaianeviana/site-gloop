@@ -483,9 +483,12 @@ export default function Home() {
         Created by <a href="https://x.com/monsprout" target="_blank" style={{ color: '#ca2456', textDecoration: 'none' }}>Monsprout</a>
       </footer>
 
-      <div style={{
-        position: 'fixed', top: '80%', left: 100, zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', transform: 'translateY(-50%)'
-      }}>
+      <div
+        className="antenna-mobile"
+        style={{
+          position: 'fixed', top: '80%', left: 100, zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', transform: 'translateY(-50%)'
+        }}
+      >
         <svg width="32" height="40" viewBox="0 0 32 40" style={{ marginBottom: 8 }}>
           <g>
             <circle cx="16" cy="32" r="4" fill="#0f0" stroke="#0f0" strokeWidth="1" />
@@ -502,9 +505,12 @@ export default function Home() {
         }} />
       </div>
 
-      <div style={{
-        position: 'fixed', bottom: 60, left: 60, zIndex: 10
-      }}>
+      <div
+        className="wave-mobile"
+        style={{
+          position: 'fixed', bottom: 60, left: 60, zIndex: 10
+        }}
+      >
         <canvas id="waveSignal" width={120} height={40} />
       </div>
 
