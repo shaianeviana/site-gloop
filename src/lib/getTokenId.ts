@@ -14,7 +14,8 @@ export interface Metadata {
 }
 
 export async function getMetadataFromTokenId(tokenId: number): Promise<Metadata | null> {
-    const url = `https://bafybeigge2cxozi7lasv3i5whhafo32ikd7zzpvzysjve6cgirus3bgsju.ipfs.w3s.link/Gloop${tokenId}`;
+    const tokenIdPlusOne = tokenId + 1;
+    const url = `https://bafybeigge2cxozi7lasv3i5whhafo32ikd7zzpvzysjve6cgirus3bgsju.ipfs.w3s.link/Gloop${tokenIdPlusOne}`;
   
     try {
       const res = await fetch(url);
