@@ -1,7 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
 import Head from 'next/head';
-import { ContractService } from '../blockchain/contract';
 import { ClaimInfoModal } from '../components/ClaimInfoModal';
 import { client, contract } from '../../public/lib/thirdweb';
 import { ConnectButton,  useSendTransaction, useActiveAccount} from "thirdweb/react";
