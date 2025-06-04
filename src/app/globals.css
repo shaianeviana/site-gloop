@@ -127,7 +127,7 @@ appkit-button[data-connect]:hover {
   }
   .antenna-mobile {
     left: 13px !important;
-    top: 83% !important;
+    top: 79% !important;
     transform: translateY(-50%) scale(0.8) !important;
     position: fixed !important;
   }
