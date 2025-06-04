@@ -6,6 +6,9 @@ import { client, contract } from '../../public/lib/thirdweb';
 import { ConnectButton,  useSendTransaction, useActiveAccount} from "thirdweb/react";
 import { claimTo } from "thirdweb/extensions/erc721";
 import { getClaimedTokenId, getMetadataFromTokenId } from '@/lib/getTokenId';
+import { darkTheme } from "thirdweb/react";
+import { createWallet } from 'thirdweb/wallets';
+
 
 interface NFTAttribute {
   trait_type: string;
@@ -32,6 +35,14 @@ export default function Home() {
   const [gloopFound, setGloopFound] = useState(false);
   const [gloopMetadata, setGloopMetadata] = useState<NFTMetadata | null>(null);
   const [showResearchReport, setShowResearchReport] = useState(false);
+  
+  const wallets = [
+    createWallet("io.metamask"),
+    createWallet("com.coinbase.wallet"),
+    createWallet("me.rainbow"),
+    createWallet("io.rabby"),
+    createWallet("io.zerion.wallet"),
+  ];
   
   function claim() {
     console.log("Account in claim:", account);
@@ -376,6 +387,20 @@ export default function Home() {
       }}>
         <ConnectButton
           client={client}
+          theme={darkTheme({
+            colors: {
+              primaryButtonBg: "hsl(342, 70%, 47%)",
+              primaryButtonText: "hsl(227, 100%, 100%)",
+              secondaryButtonBg: "hsl(233, 12%, 15%)",
+              secondaryButtonText: "hsl(120, 100%, 50%)",
+              secondaryText: "hsl(0, 27%, 98%)",
+              primaryText: "hsl(120, 100%, 50%)",
+              secondaryButtonHoverBg: "hsl(226, 17%, 89%)",
+              connectedButtonBg: "hsl(342, 69%, 47%)",
+              connectedButtonBgHover: "hsl(342, 70%, 47%)",
+            },
+          })}
+          connectModal={{ size: "compact" }}
         />
       </div>
 
