@@ -17,6 +17,11 @@ interface NFTMetadata {
   attributes: NFTAttribute[];
 }
 
+function formatValue(value: string) {
+  if (!value) return '';
+  return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+}
+
 export default function Home() {
   const account = useActiveAccount();
   const { mutate: sendTransaction, isPending, data, error } =  useSendTransaction();
@@ -25,6 +30,8 @@ export default function Home() {
   const [isClaimInfoOpen, setIsClaimInfoOpen] = useState(false);
   const [scanning, setScanning] = useState(false);
   const [gloopFound, setGloopFound] = useState(false);
+  const [gloopMetadata, setGloopMetadata] = useState<NFTMetadata | null>(null);
+  const [showResearchReport, setShowResearchReport] = useState(false);
   
   function claim() {
     console.log("Account in claim:", account);
@@ -61,16 +68,14 @@ export default function Home() {
 
   useEffect(() => {
     if (data) {
-      console.log("Transaction data:", data);
       const tx = data.transactionHash;
-      console.log("Transaction hash:", tx);
-  
       (async () => {
         try {
           const tokenId = await getClaimedTokenId(tx);
-          console.log("Token ID:", tokenId);
           const metadata = await getMetadataFromTokenId(Number(tokenId));
-          console.log("Metadata:", metadata);
+          setGloopMetadata(metadata);
+          setGloopImageSrc(metadata.image);
+          setShowResearchReport(true);
         } catch (err) {
           console.error("Erro ao obter token ID:", err);
         }
@@ -333,7 +338,7 @@ export default function Home() {
           left: 40,
           top: 210,
           zIndex: 2000,
-          background: 'rgba(10,10,10,0.85)',
+          background: 'rgba(0, 0, 0, 0.5)',
           color: '#ededed',
           fontFamily: 'Courier New, Courier, monospace',
           fontSize: '0.92rem',
@@ -410,13 +415,42 @@ export default function Home() {
         </button>
       </div>
 
-      <div id="gloopData" style={{ position: 'absolute', top: 'calc(50% - 300px)', left: 'calc(50% + 300px)', background: 'rgba(0, 0, 0, 0.5)', color: '#0f0', padding: '15px', borderRadius: '10px', fontFamily: "'Courier New', Courier, monospace", fontSize: '1rem', display: 'none', flexDirection: 'column', alignItems: 'center', height: 'auto', minWidth: '320px', minHeight: '420px' }}>
+      <div
+        id="gloopData"
+        style={{
+          position: 'absolute', top: 'calc(50% - 270px)', left: 'calc(50% + 300px)', background: 'rgba(0, 0, 0, 0.5)', color: '#0f0', padding: '15px', borderRadius: '10px', fontFamily: "'Courier New', Courier, monospace", fontSize: '1rem',
+          display: showResearchReport ? 'flex' : 'none',
+          flexDirection: 'column',
+          alignItems: 'center',
+          height: 'auto',
+          minWidth: '320px',
+          minHeight: '420px'
+        }}
+      >
         <div style={{ width: '100%', textAlign: 'center', marginBottom: '10px' }}>
           <span style={{ fontFamily: "'Courier New', Courier, monospace", fontWeight: 'bold', fontSize: '1.5rem', color: '#0f0', letterSpacing: '2px' }}>RESEARCH REPORT</span>
           <div style={{ width: '100%', height: '2px', background: '#0f0', margin: '4px 0 10px 0' }} />
         </div>
-        <img id="gloopImage" src={gloopImageSrc ?? undefined} alt="Gloop" style={{ width: '120px', height: '120px', marginBottom: '10px', border: '2px solid #0f0', background: '#222' }} />
-        <div id="gloopText" style={{ width: '100%' }}></div>
+        {gloopMetadata && (
+          <>
+            <img
+              id="gloopImage"
+              src={gloopMetadata.image}
+              alt="Gloop"
+              style={{ width: '120px', height: '120px', marginBottom: '10px', border: '2px solid #0f0', background: '#222' }}
+            />
+            <div id="gloopText" style={{ width: '100%' }}>
+              <div><b>NAME:</b> {formatValue(gloopMetadata.name)}</div>
+              <div style={{ width: '100%', height: '2px', background: '#0f0', margin: '2px 0 10px 0' }} />
+              {gloopMetadata.attributes.map(attr => (
+                <div key={attr.trait_type}>
+                  <b>{attr.trait_type.toUpperCase()}:</b> {formatValue(attr.value)}
+                  <div style={{ width: '100%', height: '2px', background: '#0f0', margin: '2px 0 10px 0' }} />
+                </div>
+              ))}
+            </div>
+          </>
+        )}
       </div>
 
       <footer style={{ position: 'fixed', bottom: '10px', width: '100%', textAlign: 'center', fontFamily: "'Courier New', Courier, monospace", color: '#ca2456', fontWeight: 'bold' }}>
@@ -459,11 +493,11 @@ export default function Home() {
           <rect x="92" y="10" width="24" height="12" fill="#0f0" stroke="#0f0" strokeWidth="2" />
           <rect x="116" y="10" width="24" height="12" fill="#ca2456" stroke="#0f0" strokeWidth="2" />
           <text x="20" y="38" fill="#0f0" fontSize="12" fontFamily="'Courier New', Courier, monospace" textAnchor="middle">0</text>
-          <text x="44" y="38" fill="#0f0" fontSize="12" fontFamily="'Courier New', Courier, monospace" textAnchor="middle">20</text>
-          <text x="68" y="38" fill="#0f0" fontSize="12" fontFamily="'Courier New', Courier, monospace" textAnchor="middle">40</text>
-          <text x="92" y="38" fill="#0f0" fontSize="12" fontFamily="'Courier New', Courier, monospace" textAnchor="middle">60</text>
-          <text x="116" y="38" fill="#0f0" fontSize="12" fontFamily="'Courier New', Courier, monospace" textAnchor="middle">80</text>
-          <text x="140" y="38" fill="#0f0" fontSize="12" fontFamily="'Courier New', Courier, monospace" textAnchor="middle">100</text>
+          <text x="44" y="38" fill="#0f0" fontSize="12" fontFamily="'Courier New', Courier, monospace" textAnchor="middle">2m</text>
+          <text x="68" y="38" fill="#0f0" fontSize="12" fontFamily="'Courier New', Courier, monospace" textAnchor="middle">4m</text>
+          <text x="92" y="38" fill="#0f0" fontSize="12" fontFamily="'Courier New', Courier, monospace" textAnchor="middle">6m</text>
+          <text x="116" y="38" fill="#0f0" fontSize="12" fontFamily="'Courier New', Courier, monospace" textAnchor="middle">8m</text>
+          <text x="140" y="38" fill="#0f0" fontSize="12" fontFamily="'Courier New', Courier, monospace" textAnchor="middle">10m</text>
         </svg>
       </div>
 

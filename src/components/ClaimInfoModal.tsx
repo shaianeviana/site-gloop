@@ -62,7 +62,10 @@ export const ClaimInfoModal: React.FC<ClaimInfoModalProps> = ({ isOpen, onClose 
           cursor: 'pointer',
           lineHeight: 1,
         }}>&times;</button>
-        <h2 style={{ color: '#0f0', fontWeight: 'normal', fontSize: '2rem', marginBottom: 10, textAlign: 'center', letterSpacing: 1 }}>Claim Eligibility</h2>
+        <div style={{ width: '100%', textAlign: 'center', marginBottom: '10px' }}>
+          <span style={{ fontFamily: "'Courier New', Courier, monospace", fontWeight: 'bold', fontSize: '1.5rem', color: '#0f0', letterSpacing: '2px' }}>CLAIM ELIGIBILITY</span>
+          <div style={{ width: '100%', height: '2px', background: '#0f0', margin: '4px 0 10px 0' }} />
+        </div>
         <div style={{ color: '#fff', textAlign: 'center', fontSize: 16, marginBottom: 16, opacity: 0.85 }}>
           Check if you meet any of the criteria below to be eligible for the whitelist (WL):
         </div>
