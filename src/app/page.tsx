@@ -8,6 +8,10 @@ import { claimTo } from "thirdweb/extensions/erc721";
 import { getClaimedTokenId, getMetadataFromTokenId } from '@/lib/getTokenId';
 import { darkTheme } from "thirdweb/react";
 import { createWallet } from 'thirdweb/wallets';
+import Radar from '../components/Radar';
+import WaveSignal from '../components/WaveSignal';
+import LoreBox from '../components/LoreBox';
+import InfoIconButton from '../components/InfoIconButton';
 
 
 interface NFTAttribute {
@@ -36,6 +40,7 @@ export default function Home() {
   const [gloopFound, setGloopFound] = useState(false);
   const [gloopMetadata, setGloopMetadata] = useState<NFTMetadata | null>(null);
   const [showResearchReport, setShowResearchReport] = useState(false);
+  const [loreVisible, setLoreVisible] = useState(false);
   
   const wallets = [
     createWallet("io.metamask"),
@@ -96,184 +101,12 @@ export default function Home() {
   }, [data]);
 
   useEffect(() => {
-    const canvas = document.getElementById('radar') as HTMLCanvasElement;
-    const ctx = canvas.getContext('2d')!;
-    canvas.width = 500;
-    canvas.height = 500;
-
-    const gloopData = document.getElementById('gloopData')!;
-    const gloopText = document.getElementById('gloopText')!;
-    const gloopImage = document.getElementById('gloopImage') as HTMLImageElement;
-    const backgroundVideo = document.getElementById('backgroundVideo') as HTMLVideoElement;
-
-    let angle = 0;
-    let gloopRadius = 150;
-    let gloopAngle = Math.random() * Math.PI * 2;
-    let waveRadius = 0;
-    let waveOpacity = 1;
-    let showDetails = false;
-
-    const loader = document.createElement('div');
-    loader.innerText = 'Minting...';
-    loader.style.position = 'absolute';
-    loader.style.top = '72%';
-    loader.style.left = '50%';
-    loader.style.transform = 'translate(-50%, -50%)';
-    loader.style.color = '#ca2456';
-    loader.style.fontWeight = 'bold';
-    loader.style.display = 'none';
-    document.body.appendChild(loader);
-
-    function drawRadar() {
-      ctx.save();
-      ctx.translate(canvas.width / 2, canvas.height / 2);
-      ctx.clearRect(-canvas.width / 2, -canvas.height / 2, canvas.width, canvas.height);
-
-      // Grid
-      ctx.strokeStyle = 'rgba(0, 255, 0, 0.6)';
-      ctx.lineWidth = 0.5;
-      const gridSpacing = 30;
-      for (let x = -canvas.width / 2; x <= canvas.width / 2; x += gridSpacing) {
-        ctx.beginPath();
-        ctx.moveTo(x, -canvas.height / 2);
-        ctx.lineTo(x, canvas.height / 2);
-        ctx.stroke();
-      }
-      for (let y = -canvas.height / 2; y <= canvas.height / 2; y += gridSpacing) {
-        ctx.beginPath();
-        ctx.moveTo(-canvas.width / 2, y);
-        ctx.lineTo(canvas.width / 2, y);
-        ctx.stroke();
-      }
-
-      // Glow nas linhas principais
-      ctx.save();
-      ctx.shadowBlur = 16;
-      ctx.shadowColor = '#0f0';
-      ctx.strokeStyle = '#0f0';
-      ctx.lineWidth = 2;
-      [50, 100, 150, 200].forEach((r) => {
-        ctx.beginPath();
-        ctx.arc(0, 0, r, 0, Math.PI * 2);
-        ctx.stroke();
-      });
-      ctx.restore();
-
-      // Ticks nos círculos
-      ctx.save();
-      ctx.strokeStyle = '#0f0';
-      ctx.lineWidth = 1;
-      for (let angle = 0; angle < 360; angle += 10) {
-        const rad = angle * Math.PI / 180;
-        ctx.beginPath();
-        ctx.moveTo(190 * Math.cos(rad), 190 * Math.sin(rad));
-        ctx.lineTo(200 * Math.cos(rad), 200 * Math.sin(rad));
-        ctx.stroke();
-      }
-      ctx.restore();
-
-      // Números nos ângulos principais
-      ctx.save();
-      ctx.fillStyle = '#0f0';
-      ctx.font = '14px Courier New';
-      [0, 90, 180, 270].forEach((deg) => {
-        const rad = deg * Math.PI / 180;
-        const radius = (deg === 0 || deg === 180) ? 220 : 210;
-        let x = radius * Math.cos(rad);
-        let y = radius * Math.sin(rad);
-        ctx.fillText(`${deg}°`, x - 12, y + 6);
-      });
-      ctx.restore();
-
-      // Desenha a faixa de sombra (sweep)
-      const sweepAngle = Math.PI / 6;
-      const sweepStart = angle - sweepAngle / 2;
-      const sweepEnd = angle + sweepAngle / 2;
-
-      const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, 200);
-      gradient.addColorStop(0, 'rgba(0,255,0,0.4)');
-      gradient.addColorStop(1, 'rgba(0,255,0,0)');
-
-      ctx.beginPath();
-      ctx.moveTo(0, 0);
-      ctx.arc(0, 0, 200, sweepStart, sweepEnd);
-      ctx.closePath();
-      ctx.fillStyle = gradient;
-      ctx.globalAlpha = 0.5;
-      ctx.fill();
-      ctx.globalAlpha = 1;
-
-      ctx.beginPath();
-      ctx.moveTo(0, 0);
-      ctx.lineTo(200 * Math.cos(angle), 200 * Math.sin(angle));
-      ctx.stroke();
-
-      if (gloopFound) {
-        const gloopX = gloopRadius * Math.cos(gloopAngle);
-        const gloopY = gloopRadius * Math.sin(gloopAngle);
-
-        ctx.beginPath();
-        ctx.arc(gloopX, gloopY, 10, 0, Math.PI * 2);
-        ctx.fillStyle = '#ca2456';
-        ctx.fill();
-
-        if (waveRadius < 100) {
-          waveRadius += 2;
-          waveOpacity = 1 - (waveRadius / 100);
-          
-          ctx.beginPath();
-          ctx.arc(gloopX, gloopY, waveRadius, 0, Math.PI * 2);
-          ctx.strokeStyle = `rgba(202, 36, 86, ${waveOpacity})`;
-          ctx.lineWidth = 2;
-          ctx.stroke();
-        } else {
-          waveRadius = 0;
-          waveOpacity = 1;
-        }
-
-        for (let i = 1; i <= 3; i++) {
-          ctx.beginPath();
-          ctx.arc(gloopX, gloopY, 10 + i * 10, 0, Math.PI * 2);
-          ctx.strokeStyle = `rgba(202, 36, 86, ${0.2 * (4 - i)})`;
-          ctx.lineWidth = 1;
-          ctx.stroke();
-        }
-      }
-      ctx.restore();
+    if (error) {
+      setIsMinting(false);
+      setScanning(false);
+      setGloopFound(false);
     }
-
-    function animate() {
-      if (scanning) {
-        angle += 0.05;
-        if (angle > Math.PI * 2) angle = 0;
-      }
-      drawRadar();
-      requestAnimationFrame(animate);
-    }
-    animate();
-
-    // WAVE SIGNAL
-    const waveSignal = document.getElementById('waveSignal') as HTMLCanvasElement;
-    if (waveSignal) {
-      const ctxWave = waveSignal.getContext('2d')!;
-      let t = 0;
-      function drawWave() {
-        ctxWave.clearRect(0, 0, 120, 40);
-        ctxWave.strokeStyle = '#0f0';
-        ctxWave.lineWidth = 2;
-        ctxWave.beginPath();
-        for (let x = 0; x < 120; x++) {
-          const y = 20 + 15 * Math.sin((x / 120) * 4 * Math.PI + t);
-          if (x === 0) ctxWave.moveTo(x, y);
-          else ctxWave.lineTo(x, y);
-        }
-        ctxWave.stroke();
-        t += 0.1;
-        requestAnimationFrame(drawWave);
-      }
-      drawWave();
-    }
-  }, [scanning, gloopFound]);
+  }, [error]);
 
   return (
     <>
@@ -307,80 +140,13 @@ export default function Home() {
           className="icon radiation" 
           alt="logo" 
           style={{ height: '200px', width: 'auto', position: 'absolute', top: '-20px', left: '40px', cursor: 'pointer', zIndex: 1002, opacity: 1 }}
-          onMouseEnter={() => {
-            const lore = document.getElementById('gloop-lore-box');
-            if (lore) lore.style.opacity = '1';
-          }}
-          onMouseLeave={() => {
-            const lore = document.getElementById('gloop-lore-box');
-            setTimeout(() => {
-              if (lore && !lore.matches(':hover')) lore.style.opacity = '0';
-            }, 50);
-          }}
+          onMouseEnter={() => setLoreVisible(true)}
+          onMouseLeave={() => setTimeout(() => setLoreVisible(false), 50)}
         />
-        {/* Info Icon */}
-        <button
-          onClick={() => setIsClaimInfoOpen(true)}
-          style={{
-            background: 'none',
-            border: 'none',
-            padding: 0,
-            marginLeft: 8,
-            cursor: 'pointer',
-            position: 'absolute',
-            top: 30,
-            left: 260,
-            zIndex: 1003,
-            display: 'flex',
-            alignItems: 'center',
-          }}
-          aria-label="Show claim info"
-        >
-          <svg width="38" height="38" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="19" cy="19" r="19" fill="#ca2456" />
-            <text x="19" y="26" textAnchor="middle" fontSize="22" fontWeight="bold" fill="#fff" fontFamily="monospace">i</text>
-          </svg>
-        </button>
+        <InfoIconButton onClick={() => setIsClaimInfoOpen(true)} aria-label="Show claim info" />
       </div>
       {/* Lore box */}
-      <div
-        id="gloop-lore-box"
-        style={{
-          position: 'fixed',
-          left: 40,
-          top: 210,
-          zIndex: 2000,
-          background: 'rgba(0, 0, 0, 0.5)',
-          color: '#ededed',
-          fontFamily: 'Courier New, Courier, monospace',
-          fontSize: '0.92rem',
-          borderRadius: '10px',
-          padding: '10px 14px',
-          maxWidth: '300px',
-          boxShadow: '0 2px 16px 0 rgba(0,0,0,0.18)',
-          opacity: 0,
-          pointerEvents: 'auto',
-          transition: 'opacity 0.3s',
-          lineHeight: 1.5,
-        }}
-        onMouseEnter={() => {
-          const lore = document.getElementById('gloop-lore-box');
-          if (lore) lore.style.opacity = '1';
-        }}
-        onMouseLeave={() => {
-          const lore = document.getElementById('gloop-lore-box');
-          const logo = document.querySelector('.icon.radiation');
-          setTimeout(() => {
-            if (logo && lore && !logo.matches(':hover')) lore.style.opacity = '0';
-          }, 50);
-        }}
-      >
-        <b style={{ color: '#0f0', fontWeight: 'bold', fontSize: '1.1rem' }}>The Gloop</b><br/>
-        A collection of 777 mutant microorganisms, altered by radiation in the post-apocalyptic world of MonSprouts.<br/><br/>
-        There are 15 character types with various traits, hidden and waiting to be minted on the Monad testnet. They're chaotic, unpredictable, and may one day evolve into MonSprouts.<br/><br/>
-        By collecting a Gloop, you're contributing to this vision!<br/>
-        Share your Gloop and tag us on <a href="https://x.com/monsprout" target="_blank" rel="noopener noreferrer" style={{ color: '#0f0', textDecoration: 'none', fontWeight: 'bold' }}><span style={{fontSize:'1.1em',fontWeight:'bold'}}>𝕏</span></a>
-      </div>
+      <LoreBox visible={loreVisible} />
 
       <div style={{
         display: 'flex', alignItems: 'center', gap: '10px',
@@ -402,6 +168,7 @@ export default function Home() {
             },
           })}
           connectModal={{ size: "compact" }}
+          wallets={wallets}
         />
       </div>
 
@@ -422,7 +189,7 @@ export default function Home() {
       )}
 
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '90vh', marginTop: '40px' }}>
-        <canvas id="radar"></canvas>
+        <Radar scanning={scanning} gloopFound={gloopFound} />
         <button 
           id="mintButton" 
           disabled={isMinting || !account}
@@ -437,7 +204,7 @@ export default function Home() {
             opacity: isMinting ? 0.7 : 1
           }}
         >
-          {isMinting ? 'Minting...' : 'Mint Gloop'}
+          {!account ? 'Connect Wallet' : isMinting ? 'Minting...' : 'Mint Gloop'}
         </button>
       </div>
 
@@ -511,7 +278,7 @@ export default function Home() {
           position: 'fixed', bottom: 60, left: 60, zIndex: 10
         }}
       >
-        <canvas id="waveSignal" width={120} height={40} />
+        <WaveSignal />
       </div>
 
       <div style={{
