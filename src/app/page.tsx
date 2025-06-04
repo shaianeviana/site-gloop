@@ -18,6 +18,7 @@ interface NFTAttribute {
 interface NFTMetadata {
   name: string;
   attributes: NFTAttribute[];
+  image: string;
 }
 
 function formatValue(value: string) {
@@ -85,7 +86,7 @@ export default function Home() {
           const tokenId = await getClaimedTokenId(tx);
           const metadata = await getMetadataFromTokenId(Number(tokenId));
           setGloopMetadata(metadata);
-          setGloopImageSrc(metadata.image);
+          setGloopImageSrc(metadata?.image ?? null);
           setShowResearchReport(true);
         } catch (err) {
           console.error("Erro ao obter token ID:", err);
