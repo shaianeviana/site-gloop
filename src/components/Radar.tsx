@@ -9,7 +9,7 @@ interface RadarProps {
 // Função para obter tamanho responsivo
 const getRadarSize = () => {
   if (typeof window !== 'undefined' && window.innerWidth < 600) {
-    return Math.min(window.innerWidth * 0.9, 350); // 90vw, máximo 350px
+    return Math.min(window.innerWidth * 0.65, 240); // 65vw, máximo 240px
   }
   return 500;
 };
