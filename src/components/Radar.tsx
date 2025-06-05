@@ -128,7 +128,7 @@ const Radar: React.FC<RadarProps> = ({ scanning, gloopFound, style }) => {
         ctx.fill();
 
         if (waveRadius < size * 0.2) {
-          waveRadius += size * 0.02;
+          waveRadius += size * 0.005;
           waveOpacity = 1 - (waveRadius / (size * 0.2));
           ctx.beginPath();
           ctx.arc(gloopX, gloopY, waveRadius, 0, Math.PI * 2);
