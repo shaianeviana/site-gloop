@@ -185,7 +185,10 @@ appkit-button[data-connect]:hover {
     padding: 16px 2vw 16px 2vw !important;
     border-radius: 16px !important;
     box-sizing: border-box !important;
-    transform: translateY(-50%) !important;
+    margin: 0 auto !important;
+    position: relative !important;
+    max-height: 90vh !important;
+    overflow-y: auto !important;
   }
   .claim-modal-close {
     top: 8px !important;
@@ -218,7 +221,7 @@ appkit-button[data-connect]:hover {
     font-size: 1.1rem !important;
   }
   .claim-modal-attention {
-    font-size: 0.65rem !important;
+    font-size: 0.52rem !important;
     text-align: center !important;
     width: 92vw !important;
     max-width: 92vw !important;
