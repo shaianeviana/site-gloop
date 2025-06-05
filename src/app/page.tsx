@@ -80,13 +80,15 @@ export default function Home() {
       from: account.address,
     });
 
+    console.log("Transaction:", transaction);
+
     sendTransaction(transaction);
   }
 
   useEffect(() => {
-    if (data) {
+    if (!isPending && data) {
       const tx = data.transactionHash;
-      (async () => {
+      const fetchTokenData = async () => {
         try {
           const tokenId = await getClaimedTokenId(tx);
           const metadata = await getMetadataFromTokenId(Number(tokenId));
@@ -96,15 +98,16 @@ export default function Home() {
         } catch (err) {
           console.error("Erro ao obter token ID:", err);
         }
-      })();
+      };
+      fetchTokenData();
     }
-  }, [data]);
+  }, [isPending, data]);
 
   useEffect(() => {
     if (error) {
       setIsMinting(false);
       setScanning(false);
-      setGloopFound(false);
+      setGloopFound(false);      
     }
   }, [error]);
 

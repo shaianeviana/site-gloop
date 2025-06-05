@@ -28,6 +28,7 @@ export async function getMetadataFromTokenId(tokenId: number): Promise<Metadata 
 }
 
 export async function getClaimedTokenId(txHash: string) {
+  try{
     const txReceipt = await provider.getTransactionReceipt(txHash);
   
     if (!txReceipt) {
@@ -48,5 +49,8 @@ export async function getClaimedTokenId(txHash: string) {
       }
     }
   
-    throw new Error("Nenhum evento Transfer encontrado");
+  }catch(err){
+    console.error("Erro ao buscar token ID:", err);
+    return null;
+  }    
   }
