@@ -145,7 +145,6 @@ appkit-button[data-connect]:hover {
     width: 24px !important;
     height: 24px !important;
     padding: 0 !important;
-    pointer-events: none !important;
   }
   button[aria-label="Show claim info"] svg {
     width: 24px !important;
