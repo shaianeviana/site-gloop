@@ -214,7 +214,7 @@ export default function Home() {
       <div
         id="gloopData"
         style={{
-          position: 'absolute', top: 'calc(50% - 270px)', left: 'calc(50% + 300px)', background: 'rgba(0, 0, 0, 0.5)', color: '#0f0', padding: '15px', borderRadius: '10px', fontFamily: "'Courier New', Courier, monospace", fontSize: '1rem',
+          position: 'absolute', top: 'calc(50% - 324px)', left: 'calc(50% + 300px)', background: 'rgba(0, 0, 0, 0.5)', color: '#0f0', padding: '15px', borderRadius: '10px', fontFamily: "'Courier New', Courier, monospace", fontSize: '1rem',
           display: showResearchReport ? 'flex' : 'none',
           flexDirection: 'column',
           alignItems: 'center',
@@ -244,6 +244,12 @@ export default function Home() {
                   <div style={{ width: '100%', height: '2px', background: '#0f0', margin: '2px 0 10px 0' }} />
                 </div>
               ))}
+              <div style={{ marginTop: '20px', textAlign: 'center', color: '#0f0' }}>
+                <div style={{ marginBottom: '10px' }}>mint successfully!</div>
+                <div style={{ marginBottom: '10px' }}>hey explorer, you found one</div>
+                <div style={{ marginBottom: '10px' }}>of the 777 gloops, thanks!</div>
+                <div>signed by @monsprout</div>
+              </div>
             </div>
           </>
         )}
