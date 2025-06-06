@@ -35,7 +35,7 @@ const LoreBox: React.FC<LoreBoxProps> = ({ style, className, visible, onClose })
       style={{
         position: 'fixed',
         left: isMobile ? '20px' : 40,
-        top: isMobile ? '96px' : 210,
+        top: isMobile ? '144px' : 210,
         transform: isMobile ? 'none' : 'none',
         zIndex: 2000,
         background: isMobile ? 'rgba(0, 0, 0, 0.75)' : 'rgba(0, 0, 0, 0.5)',
@@ -64,12 +64,13 @@ const LoreBox: React.FC<LoreBoxProps> = ({ style, className, visible, onClose })
             background: 'transparent',
             border: 'none',
             color: '#0f0',
-            fontSize: '1.2rem',
+            fontSize: '1.5rem',
             cursor: 'pointer',
             padding: 0,
             lineHeight: 1,
             zIndex: 2001,
           }}
+          aria-label="Fechar"
         >
           ×
         </button>

@@ -196,11 +196,7 @@ export default function Home() {
       {/* Lore box */}
       <LoreBox 
         visible={loreVisible} 
-<<<<<<< HEAD
         onClose={() => setLoreVisible(false)}
-=======
-        style={mobileRadarSmall ? { top: 35 } : {}} 
->>>>>>> ce69c18656ec1f2fe20a0aeaf6aef71e10e384e4
       />
 
       <div style={{
