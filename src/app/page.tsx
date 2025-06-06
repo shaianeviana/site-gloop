@@ -12,6 +12,7 @@ import Radar from '../components/Radar';
 import WaveSignal from '../components/WaveSignal';
 import LoreBox from '../components/LoreBox';
 import InfoIconButton from '../components/InfoIconButton';
+import { ResearchReportModal } from '../components/ResearchReportModal';
 
 
 interface NFTAttribute {
@@ -195,7 +196,7 @@ export default function Home() {
       {/* Lore box */}
       <LoreBox 
         visible={loreVisible} 
-        style={typeof window !== 'undefined' && window.innerWidth < 600 ? { top: 35 } : {}} 
+        style={mobileRadarSmall ? { top: 35 } : {}} 
       />
 
       <div style={{
@@ -279,50 +280,6 @@ export default function Home() {
         </button>
       </div>
 
-      <div
-        id="gloopData"
-        style={{
-          position: 'absolute', top: 'calc(50% - 324px)', left: 'calc(50% + 300px)', background: 'rgba(0, 0, 0, 0.5)', color: '#0f0', padding: '15px', borderRadius: '10px', fontFamily: "'Courier New', Courier, monospace", fontSize: '1rem',
-          display: showResearchReport ? 'flex' : 'none',
-          flexDirection: 'column',
-          alignItems: 'center',
-          height: 'auto',
-          minWidth: '320px',
-          minHeight: '420px'
-        }}
-      >
-        <div style={{ width: '100%', textAlign: 'center', marginBottom: '10px' }}>
-          <span style={{ fontFamily: "'Courier New', Courier, monospace", fontWeight: 'bold', fontSize: '1.5rem', color: '#0f0', letterSpacing: '2px' }}>RESEARCH REPORT</span>
-          <div style={{ width: '100%', height: '2px', background: '#0f0', margin: '4px 0 10px 0' }} />
-        </div>
-        {gloopMetadata && (
-          <>
-            <img
-              id="gloopImage"
-              src={gloopMetadata.image}
-              alt="Gloop"
-              style={{ width: '120px', height: '120px', marginBottom: '10px', border: '2px solid #0f0', background: '#222' }}
-            />
-            <div id="gloopText" style={{ width: '100%' }}>
-              <div><b>NAME:</b> {formatValue(gloopMetadata.name)}</div>
-              <div style={{ width: '100%', height: '2px', background: '#0f0', margin: '2px 0 10px 0' }} />
-              {gloopMetadata.attributes.map(attr => (
-                <div key={attr.trait_type}>
-                  <b>{attr.trait_type.toUpperCase()}:</b> {formatValue(attr.value)}
-                  <div style={{ width: '100%', height: '2px', background: '#0f0', margin: '2px 0 10px 0' }} />
-                </div>
-              ))}
-              <div style={{ marginTop: '20px', textAlign: 'center', color: '#0f0' }}>
-                <div style={{ marginBottom: '10px' }}>mint successfully!</div>
-                <div style={{ marginBottom: '10px' }}>hey explorer, you found one</div>
-                <div style={{ marginBottom: '10px' }}>of the 777 gloops, thanks!</div>
-                <div>signed by @monsprout</div>
-              </div>
-            </div>
-          </>
-        )}
-      </div>
-
       <footer style={{ position: 'fixed', bottom: '10px', width: '100%', textAlign: 'center', fontFamily: "'Courier New', Courier, monospace", color: '#ca2456', fontWeight: 'bold' }}>
         Created by <a href="https://x.com/monsprout" target="_blank" style={{ color: '#ca2456', textDecoration: 'none' }}>Monsprout</a>
       </footer>
@@ -378,6 +335,14 @@ export default function Home() {
       </div>
 
       <ClaimInfoModal isOpen={isClaimInfoOpen} onClose={() => setIsClaimInfoOpen(false)} />
+
+      {/* Research Report Modal */}
+      <ResearchReportModal
+        isOpen={showResearchReport}
+        onClose={() => setShowResearchReport(false)}
+        gloopMetadata={gloopMetadata}
+        formatValue={formatValue}
+      />
     </>
   );
 }
