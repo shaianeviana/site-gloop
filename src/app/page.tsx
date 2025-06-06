@@ -41,6 +41,7 @@ export default function Home() {
   const [gloopMetadata, setGloopMetadata] = useState<NFTMetadata | null>(null);
   const [showResearchReport, setShowResearchReport] = useState(false);
   const [loreVisible, setLoreVisible] = useState(false);
+  const [mobileRadarSmall, setMobileRadarSmall] = useState(false);
   
   const wallets = [
     createWallet("io.metamask"),
@@ -55,6 +56,9 @@ export default function Home() {
     if (!account) return alert("Wallet not connected");
     setScanning(true);
     setGloopFound(false);
+    if (typeof window !== 'undefined' && window.innerWidth < 600) {
+      setMobileRadarSmall(true);
+    }
 
     // Inicia a animação e depois de 2 segundos mostra a bola rosa
     setTimeout(() => {
@@ -122,6 +126,7 @@ export default function Home() {
         muted
         loop
         playsInline
+        poster="/fallback.png"
         style={{
           position: 'fixed',
           right: 0,
@@ -149,7 +154,10 @@ export default function Home() {
         <InfoIconButton onClick={() => setIsClaimInfoOpen(true)} aria-label="Show claim info" />
       </div>
       {/* Lore box */}
-      <LoreBox visible={loreVisible} />
+      <LoreBox 
+        visible={loreVisible} 
+        style={typeof window !== 'undefined' && window.innerWidth < 600 ? { top: 84 } : {}} 
+      />
 
       <div style={{
         display: 'flex', alignItems: 'center', gap: '10px',
@@ -192,7 +200,7 @@ export default function Home() {
       )}
 
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '90vh', marginTop: '40px' }}>
-        <Radar scanning={scanning} gloopFound={gloopFound} />
+        <Radar scanning={scanning} gloopFound={gloopFound} style={mobileRadarSmall ? { transform: 'scale(0.5)' } : {}} />
         <button 
           id="mintButton" 
           disabled={isMinting || !account}
@@ -284,7 +292,7 @@ export default function Home() {
       <div
         className="wave-mobile"
         style={{
-          position: 'fixed', bottom: 60, left: 60, zIndex: 10
+          position: 'fixed', bottom: 45, left: 72, zIndex: 10
         }}
       >
         <WaveSignal />

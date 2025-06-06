@@ -224,7 +224,7 @@ export const ClaimInfoModal: React.FC<ClaimInfoModalProps> = ({ isOpen, onClose 
             wordBreak: 'break-word',
           }}
         >
-          <b>Attention:</b> These criteria are only for The Gloop collection on Monad testnet. <br />If we launch another collection on testnet in the future, the criteria may change.
+          <b>Attention:</b> These criteria are only for The Gloop collection on Monad testnet.
         </div>
       </div>
     </div>

@@ -9,7 +9,7 @@ interface RadarProps {
 // Função para obter tamanho responsivo
 const getRadarSize = () => {
   if (typeof window !== 'undefined' && window.innerWidth < 600) {
-    return Math.min(window.innerWidth * 0.65, 240); // 65vw, máximo 240px
+    return Math.min(window.innerWidth * 0.22, 33); // 22vw (10% increase from 20vw), máximo 33px (10% increase from 30px)
   }
   return 500;
 };
@@ -164,7 +164,7 @@ const Radar: React.FC<RadarProps> = ({ scanning, gloopFound, style }) => {
   }, [scanning, gloopFound]);
 
   const size = getRadarSize();
-  return <canvas ref={canvasRef} width={size} height={size} style={{ width: size, height: size, ...style }} />;
+  return <canvas ref={canvasRef} width={size} height={size} style={{ width: size, height: size, maxWidth: '100vw', maxHeight: '100vw', aspectRatio: '1 / 1', ...style }} />;
 };
 
 export default Radar; 
