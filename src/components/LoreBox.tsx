@@ -5,9 +5,11 @@ interface LoreBoxProps {
   className?: string;
   visible?: boolean;
   onClose?: () => void;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
 }
 
-const LoreBox: React.FC<LoreBoxProps> = ({ style, className, visible, onClose }) => {
+const LoreBox: React.FC<LoreBoxProps> = ({ style, className, visible, onClose, onMouseEnter, onMouseLeave }) => {
   const boxRef = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -32,6 +34,8 @@ const LoreBox: React.FC<LoreBoxProps> = ({ style, className, visible, onClose })
     <div
       ref={boxRef}
       className={className}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
       style={{
         position: 'fixed',
         left: isMobile ? '20px' : 40,

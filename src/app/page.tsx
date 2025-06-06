@@ -197,6 +197,8 @@ export default function Home() {
       <LoreBox 
         visible={loreVisible} 
         onClose={() => setLoreVisible(false)}
+        onMouseEnter={() => setLoreVisible(true)}
+        onMouseLeave={() => setLoreVisible(false)}
       />
 
       <div style={{
@@ -280,8 +282,13 @@ export default function Home() {
         </button>
       </div>
 
-      <footer style={{ position: 'fixed', bottom: '10px', width: '100%', textAlign: 'center', fontFamily: "'Courier New', Courier, monospace", color: '#ca2456', fontWeight: 'bold' }}>
-        Created by <a href="https://x.com/monsprout" target="_blank" style={{ color: '#ca2456', textDecoration: 'none' }}>Monsprout</a>
+      <footer style={{ position: 'fixed', bottom: '10px', width: '100%', textAlign: 'center', fontFamily: "'Courier New', Courier, monospace", fontWeight: 'bold' }}>
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+          <span style={{ color: '#000000' }}>Created by</span>
+          <a href="https://x.com/monsprout" target="_blank" style={{ color: '#ca2456', textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}>
+            <img src="/monsprout.svg" alt="Monsprout" style={{ height: '20px', width: 'auto' }} />
+          </a>
+        </span>
       </footer>
 
       <div
