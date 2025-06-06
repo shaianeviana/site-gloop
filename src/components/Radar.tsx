@@ -9,50 +9,57 @@ interface RadarProps {
 // Função para obter tamanho responsivo
 const getRadarSize = () => {
   if (typeof window !== 'undefined' && window.innerWidth < 600) {
-    return Math.min(window.innerWidth * 0.22, 33); // 22vw (10% increase from 20vw), máximo 33px (10% increase from 30px)
+    // Set radar to 76% of original size (500px) on mobile
+    return 380; // 76% de 500px, mais próximo do quadrado desenhado
   }
   return 500;
 };
 
 const Radar: React.FC<RadarProps> = ({ scanning, gloopFound, style }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  // Radar state
+  const animationRef = useRef<number>();
+  const angleRef = useRef(0);
+  const waveRadiusRef = useRef(0);
+  const waveOpacityRef = useRef(1);
+  
   useEffect(() => {
     const size = getRadarSize();
     const canvas = canvasRef.current;
     if (!canvas) return;
+    
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = size * dpr;
+    canvas.height = size * dpr;
+    canvas.style.width = `${size}px`;
+    canvas.style.height = `${size}px`;
+    
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
-    canvas.width = size;
-    canvas.height = size;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-    let angle = 0;
     let gloopRadius = size * 0.3;
     let gloopAngle = Math.random() * Math.PI * 2;
-    let waveRadius = 0;
-    let waveOpacity = 1;
-    let animationFrame: number;
 
     function drawRadar() {
       if (!ctx || !canvas) return;
       ctx.save();
-      ctx.translate(canvas.width / 2, canvas.height / 2);
-      ctx.clearRect(-canvas.width / 2, -canvas.height / 2, canvas.width, canvas.height);
+      ctx.translate(canvas.width / (2 * dpr), canvas.height / (2 * dpr));
+      ctx.clearRect(-canvas.width / (2 * dpr), -canvas.height / (2 * dpr), canvas.width / dpr, canvas.height / dpr);
 
       // Grid
       ctx.strokeStyle = 'rgba(0, 255, 0, 0.6)';
       ctx.lineWidth = 0.5;
       const gridSpacing = size / 16.6;
-      for (let x = -canvas.width / 2; x <= canvas.width / 2; x += gridSpacing) {
+      for (let x = -canvas.width / (2 * dpr); x <= canvas.width / (2 * dpr); x += gridSpacing) {
         ctx.beginPath();
-        ctx.moveTo(x, -canvas.height / 2);
-        ctx.lineTo(x, canvas.height / 2);
+        ctx.moveTo(x, -canvas.height / (2 * dpr));
+        ctx.lineTo(x, canvas.height / (2 * dpr));
         ctx.stroke();
       }
-      for (let y = -canvas.height / 2; y <= canvas.height / 2; y += gridSpacing) {
+      for (let y = -canvas.height / (2 * dpr); y <= canvas.height / (2 * dpr); y += gridSpacing) {
         ctx.beginPath();
-        ctx.moveTo(-canvas.width / 2, y);
-        ctx.lineTo(canvas.width / 2, y);
+        ctx.moveTo(-canvas.width / (2 * dpr), y);
+        ctx.lineTo(canvas.width / (2 * dpr), y);
         ctx.stroke();
       }
 
@@ -96,27 +103,29 @@ const Radar: React.FC<RadarProps> = ({ scanning, gloopFound, style }) => {
       ctx.restore();
 
       // Desenha a faixa de sombra (sweep)
-      const sweepAngle = Math.PI / 6;
-      const sweepStart = angle - sweepAngle / 2;
-      const sweepEnd = angle + sweepAngle / 2;
+      if (scanning) {
+        const sweepAngle = Math.PI / 6;
+        const sweepStart = angleRef.current - sweepAngle / 2;
+        const sweepEnd = angleRef.current + sweepAngle / 2;
 
-      const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, size * 0.4);
-      gradient.addColorStop(0, 'rgba(0,255,0,0.4)');
-      gradient.addColorStop(1, 'rgba(0,255,0,0)');
+        const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, size * 0.4);
+        gradient.addColorStop(0, 'rgba(0,255,0,0.4)');
+        gradient.addColorStop(1, 'rgba(0,255,0,0)');
 
-      ctx.beginPath();
-      ctx.moveTo(0, 0);
-      ctx.arc(0, 0, size * 0.4, sweepStart, sweepEnd);
-      ctx.closePath();
-      ctx.fillStyle = gradient;
-      ctx.globalAlpha = 0.5;
-      ctx.fill();
-      ctx.globalAlpha = 1;
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.arc(0, 0, size * 0.4, sweepStart, sweepEnd);
+        ctx.closePath();
+        ctx.fillStyle = gradient;
+        ctx.globalAlpha = 0.5;
+        ctx.fill();
+        ctx.globalAlpha = 1;
 
-      ctx.beginPath();
-      ctx.moveTo(0, 0);
-      ctx.lineTo((size * 0.4) * Math.cos(angle), (size * 0.4) * Math.sin(angle));
-      ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo((size * 0.4) * Math.cos(angleRef.current), (size * 0.4) * Math.sin(angleRef.current));
+        ctx.stroke();
+      }
 
       if (gloopFound) {
         const gloopX = gloopRadius * Math.cos(gloopAngle);
@@ -127,17 +136,17 @@ const Radar: React.FC<RadarProps> = ({ scanning, gloopFound, style }) => {
         ctx.fillStyle = '#ca2456';
         ctx.fill();
 
-        if (waveRadius < size * 0.2) {
-          waveRadius += size * 0.005;
-          waveOpacity = 1 - (waveRadius / (size * 0.2));
+        if (waveRadiusRef.current < size * 0.2) {
+          waveRadiusRef.current += size * 0.005;
+          waveOpacityRef.current = 1 - (waveRadiusRef.current / (size * 0.2));
           ctx.beginPath();
-          ctx.arc(gloopX, gloopY, waveRadius, 0, Math.PI * 2);
-          ctx.strokeStyle = `rgba(202, 36, 86, ${waveOpacity})`;
+          ctx.arc(gloopX, gloopY, waveRadiusRef.current, 0, Math.PI * 2);
+          ctx.strokeStyle = `rgba(202, 36, 86, ${waveOpacityRef.current})`;
           ctx.lineWidth = 2;
           ctx.stroke();
         } else {
-          waveRadius = 0;
-          waveOpacity = 1;
+          waveRadiusRef.current = 0;
+          waveOpacityRef.current = 1;
         }
 
         for (let i = 1; i <= 3; i++) {
@@ -153,18 +162,40 @@ const Radar: React.FC<RadarProps> = ({ scanning, gloopFound, style }) => {
 
     function animate() {
       if (scanning) {
-        angle += 0.05;
-        if (angle > Math.PI * 2) angle = 0;
+        angleRef.current += 0.05;
+        if (angleRef.current > Math.PI * 2) angleRef.current = 0;
       }
       drawRadar();
-      animationFrame = requestAnimationFrame(animate);
+      animationRef.current = requestAnimationFrame(animate);
     }
+
+    // Start animation
     animate();
-    return () => cancelAnimationFrame(animationFrame);
+
+    // Cleanup
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
   }, [scanning, gloopFound]);
 
   const size = getRadarSize();
-  return <canvas ref={canvasRef} width={size} height={size} style={{ width: size, height: size, maxWidth: '100vw', maxHeight: '100vw', aspectRatio: '1 / 1', ...style }} />;
+  return (
+    <canvas 
+      ref={canvasRef} 
+      width={size} 
+      height={size} 
+      style={{ 
+        width: size, 
+        height: size, 
+        maxWidth: '100vw', 
+        maxHeight: '100vw', 
+        aspectRatio: '1 / 1',
+        ...style 
+      }} 
+    />
+  );
 };
 
 export default Radar; 

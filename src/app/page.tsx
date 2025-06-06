@@ -52,26 +52,45 @@ export default function Home() {
   ];
   
   function claim() {
+    console.log('MINT BUTTON CLICKED', { isMinting, disabled: isMinting });
     console.log("Account in claim:", account);
-    if (!account) return alert("Wallet not connected");
-    setScanning(true);
-    setGloopFound(false);
-    if (typeof window !== 'undefined' && window.innerWidth < 600) {
-      setMobileRadarSmall(true);
-    }
-
-    // Inicia a animação e depois de 2 segundos mostra a bola rosa
-    setTimeout(() => {
-      setScanning(false);
-      setGloopFound(true);
-      // Pausar o vídeo de background quando a bola rosa for encontrada
-      const backgroundVideo = document.getElementById('backgroundVideo') as HTMLVideoElement | null;
-      if (backgroundVideo) {
-        backgroundVideo.pause();
+    if (!account) {
+      // Trigger wallet connection
+      const connectButton = document.querySelector('appkit-button[data-connect]') as HTMLElement;
+      if (connectButton) {
+        connectButton.click();
       }
-    }, 2000);
+      return;
+    }
+    
+    // Reset states first
+    setGloopFound(false);
+    setScanning(false);
+    setIsMinting(true);
+    
+    // Force a small delay to ensure state updates
+    setTimeout(() => {
+      setScanning(true);
+      
+      // Check if mobile and set radar size
+      if (typeof window !== 'undefined' && window.innerWidth < 600) {
+        setMobileRadarSmall(true);
+      }
 
-    // Dar play no vídeo de background
+      // Start animation and show pink ball after 2 seconds
+      setTimeout(() => {
+        setScanning(false);
+        setGloopFound(true);
+        setIsMinting(false);
+        // Pause background video when pink ball is found
+        const backgroundVideo = document.getElementById('backgroundVideo') as HTMLVideoElement | null;
+        if (backgroundVideo) {
+          backgroundVideo.pause();
+        }
+      }, 2000);
+    }, 100);
+
+    // Play background video
     const backgroundVideo = document.getElementById('backgroundVideo') as HTMLVideoElement | null;
     if (backgroundVideo) {
       backgroundVideo.play();
@@ -88,6 +107,26 @@ export default function Home() {
 
     sendTransaction(transaction);
   }
+
+  // Add useEffect to handle window resize
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 600) {
+        setMobileRadarSmall(true);
+      } else {
+        setMobileRadarSmall(false);
+      }
+    };
+
+    // Set initial value
+    handleResize();
+
+    // Add event listener
+    window.addEventListener('resize', handleResize);
+
+    // Cleanup
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     if (!isPending && data) {
@@ -111,7 +150,7 @@ export default function Home() {
     if (error) {
       setIsMinting(false);
       setScanning(false);
-      setGloopFound(false);      
+      setGloopFound(false);
     }
   }, [error]);
 
@@ -156,7 +195,7 @@ export default function Home() {
       {/* Lore box */}
       <LoreBox 
         visible={loreVisible} 
-        style={typeof window !== 'undefined' && window.innerWidth < 600 ? { top: 84 } : {}} 
+        style={typeof window !== 'undefined' && window.innerWidth < 600 ? { top: 59 } : {}} 
       />
 
       <div style={{
@@ -199,11 +238,26 @@ export default function Home() {
         </div>
       )}
 
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '90vh', marginTop: '40px' }}>
-        <Radar scanning={scanning} gloopFound={gloopFound} style={mobileRadarSmall ? { transform: 'scale(0.5)' } : {}} />
+      <div style={{ 
+        display: 'flex', 
+        flexDirection: 'column', 
+        alignItems: 'center', 
+        justifyContent: 'center', 
+        height: '90vh', 
+        marginTop: '40px',
+        position: 'relative',
+        width: '100%',
+        maxWidth: '100vw',
+        overflow: 'hidden'
+      }}>
+        <Radar 
+          scanning={scanning} 
+          gloopFound={gloopFound} 
+          style={{}} 
+        />
         <button 
           id="mintButton" 
-          disabled={isMinting || !account}
+          disabled={isMinting}
           onClick={claim}
           style={{ 
             backgroundColor: '#ca2456', 
@@ -212,7 +266,13 @@ export default function Home() {
             padding: '10px 20px', 
             cursor: isMinting ? 'not-allowed' : 'pointer',
             marginTop: '20px',
-            opacity: isMinting ? 0.7 : 1
+            opacity: isMinting ? 0.7 : 1,
+            transition: 'all 0.3s ease',
+            fontSize: '1.2rem',
+            borderRadius: '8px',
+            minWidth: '200px',
+            zIndex: 1001,
+            position: 'relative',
           }}
         >
           {!account ? 'Connect Wallet' : isMinting ? 'Minting...' : 'Mint Gloop'}
