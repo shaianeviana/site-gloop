@@ -4,9 +4,10 @@ interface LoreBoxProps {
   style?: React.CSSProperties;
   className?: string;
   visible?: boolean;
+  onClose?: () => void;
 }
 
-const LoreBox: React.FC<LoreBoxProps> = ({ style, className, visible }) => {
+const LoreBox: React.FC<LoreBoxProps> = ({ style, className, visible, onClose }) => {
   const boxRef = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -33,16 +34,18 @@ const LoreBox: React.FC<LoreBoxProps> = ({ style, className, visible }) => {
       className={className}
       style={{
         position: 'fixed',
-        left: 40,
-        top: isMobile ? 126 : 210, // 40% reduction on mobile
+        left: isMobile ? '20px' : 40,
+        top: isMobile ? '96px' : 210,
+        transform: isMobile ? 'none' : 'none',
         zIndex: 2000,
-        background: 'rgba(0, 0, 0, 0.5)',
+        background: isMobile ? 'rgba(0, 0, 0, 0.75)' : 'rgba(0, 0, 0, 0.5)',
         color: '#ededed',
         fontFamily: 'Courier New, Courier, monospace',
-        fontSize: '0.92rem',
+        fontSize: isMobile ? '0.814rem' : '0.92rem',
         borderRadius: '10px',
-        padding: '10px 14px',
-        maxWidth: '300px',
+        padding: isMobile ? '8px 11px' : '10px 14px',
+        maxWidth: isMobile ? '90%' : '300px',
+        width: isMobile ? '90%' : 'auto',
         boxShadow: '0 2px 16px 0 rgba(0,0,0,0.18)',
         opacity: visible ? 1 : 0,
         pointerEvents: 'auto',
@@ -51,7 +54,27 @@ const LoreBox: React.FC<LoreBoxProps> = ({ style, className, visible }) => {
         ...style,
       }}
     >
-      <b style={{ color: '#0f0', fontWeight: 'bold', fontSize: '1.1rem' }}>The Gloop</b><br />
+      {isMobile && onClose && (
+        <button
+          onClick={onClose}
+          style={{
+            position: 'absolute',
+            top: 8,
+            right: 8,
+            background: 'transparent',
+            border: 'none',
+            color: '#0f0',
+            fontSize: '1.2rem',
+            cursor: 'pointer',
+            padding: 0,
+            lineHeight: 1,
+            zIndex: 2001,
+          }}
+        >
+          ×
+        </button>
+      )}
+      <b style={{ color: '#0f0', fontWeight: 'bold', fontSize: isMobile ? '0.968rem' : '1.1rem' }}>The Gloop</b><br />
       A collection of 777 mutant microorganisms, altered by radiation in the post-apocalyptic world of MonSprouts.<br /><br />
       There are 15 character types with various traits, hidden and waiting to be minted on the Monad testnet. They're chaotic, unpredictable, and may one day evolve into MonSprouts.<br /><br />
       By collecting a Gloop, you're contributing to this vision!<br />

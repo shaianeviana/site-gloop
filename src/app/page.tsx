@@ -195,7 +195,7 @@ export default function Home() {
       {/* Lore box */}
       <LoreBox 
         visible={loreVisible} 
-        style={typeof window !== 'undefined' && window.innerWidth < 600 ? { top: 35 } : {}} 
+        onClose={() => setLoreVisible(false)}
       />
 
       <div style={{
