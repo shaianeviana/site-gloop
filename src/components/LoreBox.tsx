@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 
 interface LoreBoxProps {
   style?: React.CSSProperties;
@@ -8,6 +8,18 @@ interface LoreBoxProps {
 
 const LoreBox: React.FC<LoreBoxProps> = ({ style, className, visible }) => {
   const boxRef = useRef<HTMLDivElement>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 600);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   useEffect(() => {
     if (boxRef.current) {
@@ -22,7 +34,7 @@ const LoreBox: React.FC<LoreBoxProps> = ({ style, className, visible }) => {
       style={{
         position: 'fixed',
         left: 40,
-        top: 210,
+        top: isMobile ? 126 : 210, // 40% reduction on mobile
         zIndex: 2000,
         background: 'rgba(0, 0, 0, 0.5)',
         color: '#ededed',

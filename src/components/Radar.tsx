@@ -17,7 +17,7 @@ const getRadarSize = () => {
 
 const Radar: React.FC<RadarProps> = ({ scanning, gloopFound, style }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const animationRef = useRef<number>();
+  const animationRef = useRef<number | null>(null);
   const angleRef = useRef(0);
   const waveRadiusRef = useRef(0);
   const waveOpacityRef = useRef(1);
