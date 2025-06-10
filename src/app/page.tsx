@@ -260,16 +260,16 @@ export default function Home() {
         />
         <button 
           id="mintButton" 
-          disabled={isMinting}
+          disabled={!account || isMinting}
           onClick={claim}
           style={{ 
             backgroundColor: '#ca2456', 
             color: 'white', 
             border: 'none', 
             padding: '10px 20px', 
-            cursor: isMinting ? 'not-allowed' : 'pointer',
+            cursor: (!account || isMinting) ? 'not-allowed' : 'pointer',
             marginTop: '20px',
-            opacity: isMinting ? 0.7 : 1,
+            opacity: (!account || isMinting) ? 0.5 : 1,
             transition: 'all 0.3s ease',
             fontSize: '1.2rem',
             borderRadius: '8px',
@@ -278,7 +278,7 @@ export default function Home() {
             position: 'relative',
           }}
         >
-          {!account ? 'Connect Wallet' : isMinting ? 'Minting...' : 'Mint Gloop'}
+          {isMinting ? 'Minting...' : 'Mint Gloop'}
         </button>
       </div>
 
