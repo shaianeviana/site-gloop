@@ -85,7 +85,7 @@ const LoreBox: React.FC<LoreBoxProps> = ({ style, className, visible, onClose, o
       By collecting a Gloop, you're contributing to this vision!<br />
       Share your Gloop and tag us on{' '}
       <a
-        href="https://x.com/monsprout"
+        href="https://x.com/monsproutnft"
         target="_blank"
         rel="noopener noreferrer"
         style={{ color: '#0f0', textDecoration: 'none', fontWeight: 'bold' }}

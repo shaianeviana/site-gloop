@@ -285,7 +285,7 @@ export default function Home() {
       <footer style={{ position: 'fixed', bottom: '10px', width: '100%', textAlign: 'center', fontFamily: "'Courier New', Courier, monospace", fontWeight: 'bold' }}>
         <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
           <span style={{ color: '#000000' }}>Created by</span>
-          <a href="https://x.com/monsprout" target="_blank" style={{ color: '#ca2456', textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}>
+          <a href="https://x.com/monsproutnft" target="_blank" style={{ color: '#ca2456', textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}>
             <img src="/monsprout.svg" alt="Monsprout" style={{ height: '20px', width: 'auto' }} />
           </a>
         </span>
